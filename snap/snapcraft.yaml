@@ -1,0 +1,71 @@
+name: flif # you probably want to 'snapcraft register <name>'
+base: core18 # the base snap is the execution environment for this snap
+version: '1.0.0' # just for humans, typically '1.2+git' or '1.3.2'
+summary: All utilities you need for the Free Lossless Image Format
+description: |
+  FLIF is a lossless image format based on MANIAC compression.
+  MANIAC (Meta-Adaptive Near-zero Integer Arithmetic Coding)
+  is a variant of CABAC (context-adaptive binary arithmetic coding),
+  where the contexts are nodes of decision trees which are 
+  dynamically learned at encode time.
+
+grade: stable # must be 'stable' to release into candidate/stable channels
+confinement: strict # use 'strict' once you have the right plugs and slots
+
+environment:
+  "LD_LIBRARY_PATH": "$LD_LIBRARY_PATH:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio"
+  CC: clang
+  SDL_RENDER_DRIVER: software
+
+parts:
+  flif:
+    plugin: cmake
+    source: https://github.com/FLIF-hub/FLIF.git
+    source-subdir: src
+    configflags:
+      - -DCMAKE_BINARY_DIR=$SNAP/usr/bin/
+      - -DCMAKE_CURRENT_BINARY_DIR=$SNAP/usr/bin/
+    build-packages:
+      - libpng-dev
+      - make
+      - pkg-config
+      - build-essential
+      - zlib1g-dev
+      - libsdl2-dev
+      - libpulse0
+    stage-packages:
+      - libasound2
+      - libasyncns0
+      - libflac8
+      - libogg0
+      - libpng16-16
+      - libpulse0
+      - libsdl2-2.0-0
+      - libsndfile1
+      - libsndio6.1
+      - libvorbis0a
+      - libvorbisenc2
+      - libwayland-client0
+      - libwayland-cursor0
+      - libwayland-egl1
+      - libx11-6
+      - libxau6
+
+
+
+apps:
+  flif:
+    command: bin/flif
+    plugs: ["home"]
+  dflif:
+    command: bin/dflif
+    plugs: ["home"]
+  gif2flif:
+    command: bin/gif2flif
+    plugs: ["home"]
+  apng2flif:
+    command: bin/apng2flif
+    plugs: ["home"]
+  viewflif:
+    command: bin/viewflif
+    plugs: ["home", "x11"]
